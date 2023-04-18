@@ -1,4 +1,4 @@
-package testPackage
+package tournamentNet
 
 import (
 	"math"
