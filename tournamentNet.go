@@ -143,3 +143,14 @@ func GetLevelsNet(teamsAmount, levelsAmount int) [][]Match {
 	//fmt.Println("Будем передавать уровневую сетку!!!")
 	return tournament.fillLevels()
 }
+
+func NewLevelPairs(a []int) []Match {
+	var level []Match
+	for i := 1; i <= len(a)/2; i++ {
+		level = append(level, Match{
+			FirstTeamIndex:  a[i-1],
+			SecondTeamIndex: a[len(a)-i],
+		})
+	}
+	return level
+}
