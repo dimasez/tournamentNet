@@ -2,6 +2,7 @@ package tournamentNet
 
 import (
 	"math"
+	"sort"
 )
 
 type net struct {
@@ -146,6 +147,7 @@ func GetLevelsNet(teamsAmount, levelsAmount int) [][]Match {
 
 //Создание новых пар команд/матчей в 1+ туре на одном уровне уровневой системы
 func NewLevelPairs(teamsArray []int) []Match {
+	sort.Ints(teamsArray)
 	var level []Match
 	for i := 1; i <= len(teamsArray)/2; i++ {
 		level = append(level, Match{
