@@ -144,12 +144,13 @@ func GetLevelsNet(teamsAmount, levelsAmount int) [][]Match {
 	return tournament.fillLevels()
 }
 
-func NewLevelPairs(a []int) []Match {
+//Создание новых пар команд/матчей в 1+ туре на одном уровне уровневой системы
+func NewLevelPairs(teamsArray []int) []Match {
 	var level []Match
-	for i := 1; i <= len(a)/2; i++ {
+	for i := 1; i <= len(teamsArray)/2; i++ {
 		level = append(level, Match{
-			FirstTeamIndex:  a[i-1],
-			SecondTeamIndex: a[len(a)-i],
+			FirstTeamIndex:  teamsArray[i-1],
+			SecondTeamIndex: teamsArray[len(teamsArray)-i],
 		})
 	}
 	return level
