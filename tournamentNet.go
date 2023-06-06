@@ -1,6 +1,7 @@
 package tournamentNet
 
 import (
+	"fmt"
 	"math"
 	"sort"
 )
@@ -137,11 +138,6 @@ func GetLevelsNet(teamsAmount, levelsAmount int) [][]Match {
 		TeamsAmount:  teamsAmount,
 		LevelsAmount: levelsAmount,
 	}
-	//fmt.Println("Создаем жеребьевку уровневой системы")
-	//fmt.Printf("В турнире участвует %v команд\n", tournament.TeamsAmount)
-	//fmt.Printf("В турнире %v уровней\n", tournament.LevelsAmount)
-	//fmt.Printf("Каждый уровень содержит по %v команд\n", tournament.calcMaxTeamsOnLevel())
-	//fmt.Println("Будем передавать уровневую сетку!!!")
 	return tournament.fillLevels()
 }
 
@@ -156,4 +152,93 @@ func NewLevelPairs(teamsArray []int) []Match {
 		})
 	}
 	return level
+}
+
+//Нахождение степени 2 для турниных пар - в зависимости от количества команд
+func FindDegreeIndex(teamsAmount int) int {
+	degreeIndex := 1
+	for i := 1; i < 40; i++ {
+		if teamsAmount <= int(math.Pow(float64(2), float64(i))) && teamsAmount > int(math.Pow(float64(2), float64(i-1))) {
+			degreeIndex = i
+		}
+	}
+	return degreeIndex
+}
+
+//Нахождение максимального ранга команды в зависимости от степени 2 - например 2-в-4 = 16
+func CalcMaxTeamRange(degreeIndex int) int {
+	maxRangeTeam := int(math.Pow(float64(2), float64(degreeIndex)))
+	return maxRangeTeam
+}
+
+//Генерация нижней сетки турнира Double-Elimination - ОДНОГО ТУРА - в зависимости от того - он НЕЧЕТНЫЙ или  чОтный
+func GenerateBottomDETour(isOdd bool, teamsAmount int) {
+	var tour []Match
+	a := FindDegreeIndex(teamsAmount)
+	//Два алгоритма для нечетного и четного тура
+	if isOdd == true {
+		controlSum := 3*int(math.Pow(float64(2), float64(a-1))) + 1
+		maxRangeTeam := int(math.Pow(float64(2), float64(a))) //Считаем максимальный ранг команды
+		//Количество матчей - maxRang команды / 4
+		for i := 0; i < maxRangeTeam/4; i++ {
+			FindFirstTeamIndex := controlSum - maxRangeTeam + i
+			tour = append(tour, Match{
+				FirstTeamIndex:  FindFirstTeamIndex,
+				SecondTeamIndex: controlSum - FindFirstTeamIndex,
+			})
+		}
+		fmt.Println("Контрольная сумма. Тур НЕЧЕТНЫЙ", controlSum)
+		//Для четного тура
+	} else {
+		controlSum := int((math.Pow(float64(2), float64(a))) + 1)
+		maxRangeTeam := int(math.Pow(float64(2), float64(a))) - int(math.Pow(float64(2), float64(a)))/4 //Считаем максимальный ранг команды
+		//Количество матчей - maxRang команды / 3
+		for i := 0; i < maxRangeTeam/3; i++ {
+			FindFirstTeamIndex := controlSum - maxRangeTeam + i
+			tour = append(tour, Match{
+				FirstTeamIndex:  FindFirstTeamIndex,
+				SecondTeamIndex: controlSum - FindFirstTeamIndex,
+			})
+		}
+
+	}
+}
+
+//Структура для уровневой системы - задается количество команд + количество матчей на уровне
+type LevelsNetVersion2 struct {
+	TeamsAmount        int //Количество команд. Фактическое
+	GamesOnLevelAmount int //Количество Игр на уровне
+}
+
+//Определяем количество уровней для уровневой системы v2
+func (l *LevelsNetVersion2) CalcLevels() int {
+	levelsAmount := 1
+	for i := 1; i <= l.TeamsAmount/2; i++ {
+		if levelsAmount*l.GamesOnLevelAmount*2 < l.TeamsAmount {
+			levelsAmount++
+		} else {
+			break
+		}
+	}
+	return levelsAmount
+}
+
+//Создание уровневой системы - формирование пар команд - заполнение уровней
+func (l *LevelsNetVersion2) FillLevels() [][]Match {
+	var netArray [][]Match
+	a := l.CalcLevels()
+
+	for i := 0; i < a; i++ {
+		var tour []Match
+		firstTeamIndex := 1 + i*l.GamesOnLevelAmount*2        //Определение индекса первой команды на уровне
+		controlSum := firstTeamIndex + l.GamesOnLevelAmount*2 //Определение контрольной суммы на уровне для генерации пар
+		for j := 1; j <= l.GamesOnLevelAmount; j++ {
+			tour = append(tour, Match{
+				FirstTeamIndex:  controlSum - l.GamesOnLevelAmount*2 + j - 1,
+				SecondTeamIndex: controlSum - j,
+			})
+		}
+		netArray = append(netArray, tour)
+	}
+	return netArray
 }
