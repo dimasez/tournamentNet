@@ -172,7 +172,7 @@ func CalcMaxTeamRange(degreeIndex int) int {
 }
 
 //Генерация нижней сетки турнира Double-Elimination - ОДНОГО ТУРА - в зависимости от того - он НЕЧЕТНЫЙ или  чОтный
-func GenerateBottomDETour(isOdd bool, teamsAmount int) {
+func GenerateBottomDETour(isOdd bool, teamsAmount int) []Match {
 	var tour []Match
 	a := FindDegreeIndex(teamsAmount)
 	//Два алгоритма для нечетного и четного тура
@@ -202,6 +202,7 @@ func GenerateBottomDETour(isOdd bool, teamsAmount int) {
 		}
 
 	}
+	return tour
 }
 
 //Структура для уровневой системы - задается количество команд + количество матчей на уровне
