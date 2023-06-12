@@ -243,3 +243,26 @@ func (l *LevelsNetVersion2) FillLevels() [][]Match {
 	}
 	return netArray
 }
+
+func FillLevelsNetType(teamsAmount, gamesOnLevel int) [][]Match {
+	var netArray [][]Match
+	var l = LevelsNetVersion2{
+		TeamsAmount:        teamsAmount,
+		GamesOnLevelAmount: gamesOnLevel,
+	}
+	a := l.CalcLevels()
+
+	for i := 0; i < a; i++ {
+		var tour []Match
+		firstTeamIndex := 1 + i*l.GamesOnLevelAmount*2        //Определение индекса первой команды на уровне
+		controlSum := firstTeamIndex + l.GamesOnLevelAmount*2 //Определение контрольной суммы на уровне для генерации пар
+		for j := 1; j <= l.GamesOnLevelAmount; j++ {
+			tour = append(tour, Match{
+				FirstTeamIndex:  controlSum - l.GamesOnLevelAmount*2 + j - 1,
+				SecondTeamIndex: controlSum - j,
+			})
+		}
+		netArray = append(netArray, tour)
+	}
+	return netArray
+}
