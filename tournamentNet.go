@@ -13,12 +13,12 @@ type net struct {
 	toursAmount int //Количество туров. Финал(1) - Полуфинал (2) - ....
 }
 
-func (n *net) CalcMatches() {
+func (n *net) calcMatches() {
 	n.matchAmount = n.teamsAmount - 1
 }
 
-func (n *net) CalcTours() int {
-	n.CalcMatches()
+func (n *net) calcTours() int {
+	n.calcMatches()
 	maxMatches := 1 //Количество матч для сетки с 1 туром
 	if n.teamsAmount > 2 {
 		for i := 2; i < 50; i++ {
@@ -45,7 +45,7 @@ type Match struct {
 	SecondTeamIndex int
 }
 
-func (n *net) GeneratePairs() [][]Match {
+func (n *net) generatePairs() [][]Match {
 
 	var netArray [][]Match
 	var tour []Match
@@ -81,15 +81,15 @@ func GetOlympicNet(teamsAmount int) [][]Match {
 	var firstNet = net{
 		teamsAmount: teamsAmount,
 	}
-	firstNet.CalcMatches()
-	firstNet.CalcTours()
+	firstNet.calcMatches()
+	firstNet.calcTours()
 
 	//fmt.Printf("При %v командах будет %v матчей в турнире\n", firstNet.teamsAmount, firstNet.matchAmount)
 	//fmt.Println("Туров будет", firstNet.toursAmount)
 	//fmt.Println("Максимальное количество команд", firstNet.teamsMax)
-	//fmt.Println(firstNet.GeneratePairs())
+	//fmt.Println(firstNet.generatePairs())
 	//fmt.Println("Будем передавать олимпийскую сетку")
-	return firstNet.GeneratePairs()
+	return firstNet.generatePairs()
 }
 
 type LevelsNet struct {
@@ -155,7 +155,7 @@ func NewLevelPairs(teamsArray []int) []Match {
 }
 
 //Нахождение степени 2 для турниных пар - в зависимости от количества команд
-func FindDegreeIndex(teamsAmount int) int {
+func findDegreeIndex(teamsAmount int) int {
 	degreeIndex := 1
 	for i := 1; i < 40; i++ {
 		if teamsAmount <= int(math.Pow(float64(2), float64(i))) && teamsAmount > int(math.Pow(float64(2), float64(i-1))) {
@@ -174,7 +174,7 @@ func CalcMaxTeamRange(degreeIndex int) int {
 //Генерация нижней сетки турнира Double-Elimination - ОДНОГО ТУРА - в зависимости от того - он НЕЧЕТНЫЙ или  чОтный
 func GenerateBottomDETour(isOdd bool, teamsAmount int) []Match {
 	var tour []Match
-	a := FindDegreeIndex(teamsAmount)
+	a := findDegreeIndex(teamsAmount)
 	//Два алгоритма для нечетного и четного тура
 	if isOdd == true {
 		controlSum := 3*int(math.Pow(float64(2), float64(a-1))) + 1
@@ -212,7 +212,7 @@ type LevelsNetVersion2 struct {
 }
 
 //Определяем количество уровней для уровневой системы v2
-func (l *LevelsNetVersion2) CalcLevels() int {
+func (l *LevelsNetVersion2) calcLevels() int {
 	levelsAmount := 1
 	for i := 1; i <= l.TeamsAmount/2; i++ {
 		if levelsAmount*l.GamesOnLevelAmount*2 < l.TeamsAmount {
@@ -225,9 +225,9 @@ func (l *LevelsNetVersion2) CalcLevels() int {
 }
 
 //Создание уровневой системы - формирование пар команд - заполнение уровней
-func (l *LevelsNetVersion2) FillLevels() [][]Match {
+func (l *LevelsNetVersion2) fillLevels() [][]Match {
 	var netArray [][]Match
-	a := l.CalcLevels()
+	a := l.calcLevels()
 
 	for i := 0; i < a; i++ {
 		var tour []Match
@@ -250,7 +250,7 @@ func FillLevelsNetType(teamsAmount, gamesOnLevel int) [][]Match {
 		TeamsAmount:        teamsAmount,
 		GamesOnLevelAmount: gamesOnLevel,
 	}
-	a := l.CalcLevels()
+	a := l.calcLevels()
 
 	for i := 0; i < a; i++ {
 		var tour []Match
