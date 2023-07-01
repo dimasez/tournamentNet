@@ -205,6 +205,30 @@ func GenerateBottomDETour(isOdd bool, teamsAmount int) []Match {
 	return tour
 }
 
+//Double Elemination - cоздаем нижнюю сетку
+func GenerateBottomDENet(teamsAmount int) [][]Match {
+	//Определяем степень ДВОЙКИ в зависимости от кол-ва команд
+	degreeIndex := findDegreeIndex(teamsAmount)
+	//Определяем максимальный ранг команды
+	maxRangeTeam := CalcMaxTeamRange(degreeIndex)
+	var bottomDENet [][]Match
+
+	//Итерируем по степени два по не достинет степени 2
+
+	//fmt.Println("------- новая нижняя сетка -------")
+	for i := degreeIndex; i >= 2; i = i - 1 {
+
+		//Генерим тур нижней сетки
+		bottomDENet = append(bottomDENet, GenerateBottomDETour(true, maxRangeTeam))
+		bottomDENet = append(bottomDENet, GenerateBottomDETour(false, maxRangeTeam))
+		maxRangeTeam = maxRangeTeam / 2
+	}
+	//fmt.Println(bottomDENet)
+	//fmt.Println("------- конец сетки -------")
+
+	return bottomDENet
+}
+
 //Структура для уровневой системы - задается количество команд + количество матчей на уровне
 type LevelsNetVersion2 struct {
 	TeamsAmount        int //Количество команд. Фактическое
